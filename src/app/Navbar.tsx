@@ -1,4 +1,6 @@
 "use client";
+import { data } from "autoprefixer";
+import { signIn, signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 
@@ -7,7 +9,9 @@ import { usePathname, useRouter } from "next/navigation";
 export default function Navbar() {
   const router = useRouter();
   const pathName = usePathname();
-  // console.log(pathName);
+  const { data: session, status }: { data: any; status: string } = useSession();
+
+  // console.log(session);
 
   return (
     <div className="flex bg-gray-800 py-3 px-5 justify-between items-center">
@@ -48,14 +52,33 @@ export default function Navbar() {
           </li>
         </ul>
       </div>
-      <button
-        className="text-white px-3 rounded-sm bg-yellow-500"
-        onClick={() => {
-          router.push("/auth/login");
-        }}
-      >
-        Login
-      </button>
+      {status === "authenticated" ? (
+        <div className="flex">
+          {session.user && (
+            <p className="text-white mr-4">{session?.user?.fullname}</p>
+          )}
+          {/* <p className="text-white mr-4">Ilham Maulana</p> */}
+          <button
+            className="text-white px-3 rounded-sm bg-yellow-500"
+            onClick={() => {
+              signOut();
+            }}
+          >
+            Logout
+          </button>
+        </div>
+      ) : (
+        <div>
+          <button
+            className="text-white px-3 rounded-sm bg-yellow-500"
+            onClick={() => {
+              signIn();
+            }}
+          >
+            Login
+          </button>
+        </div>
+      )}
     </div>
   );
 }
